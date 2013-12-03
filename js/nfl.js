@@ -314,22 +314,11 @@ define(['cydr/dist/cydr-dist', 'data/probabilities'], function(Cydr, Probabiliti
     });
 
 
-   window.App = new Simulator("#app");
-    window.App.get("PuntingCriteria").push(new SimulationCriterion());
-    window.App.get("GoForItCriteria").push(new SimulationCriterion());
 
+    var App = new Simulator("#app");
+    App.get("PuntingCriteria").push(new SimulationCriterion());
+    App.get("GoForItCriteria").push(new SimulationCriterion());
 
-/*
-            "Togo": "Int",
-            "Decision": "Text",
-            "Converted": "Boolean",
-            "PuntDistance": "Int",
-            "ScoredTD": "Boolean",
-            "ScoredFG": "Boolean",
-            "OriginalYardLine": "Int",
-            "NewYardLine": "Int",
-            "Score": "Int"
-*/
 
 
 });
