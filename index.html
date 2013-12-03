@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Meta, title, CSS, favicons, etc. -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>NFL 4th down Simulator</title>
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+	<script type="text/javascript" src="js/require.js" data-main="js/nfl"></script>
+
+	<style type="text/css">
+		[cydr-hidden], [cydr-visible] {display:none;}
+		.criteria {
+			border:1px dashed;
+			border-radius:5px;
+			position:relative;
+			margin:10px 0;
+			padding:10px;
+			background:rgb(240,240,240);
+		}
+		.criteria a {
+			position:absolute;
+			top:-12px;
+			right:-10px;
+			color:#666;
+			font-size:18px;
+		}
+		.criteria select {
+			font-size:11px;
+			padding:0;
+			line-height:0;
+			height:auto;
+			width:100px;
+		}
+		.criterion {
+			margin-bottom:5px;
+		}
+		.simulation-count {
+			font-size:20px;
+			border:1px solid #ddd;
+			padding:10px;
+			width:100%;
+		}
+		button.btn.run-simulation {
+			font-size:30px;
+			width:100%;
+		}
+		button.btn.reset-simulation {
+			width:50%;
+			margin:10px auto;
+			display:block;
+		}
+		.wrap {
+			padding-top:60px;
+		}
+		.run-again {float:right;margin-top:10px;margin-left:15px;}
+		.configure {padding:10px;}
+		.loading {opacity:0.5;}
+	</style>
+</head>
+<body id="app">
+	<header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+	  <div class="container">
+	    <div class="navbar-header">
+	      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a href="#" cydr-click="State('configure')" class="navbar-brand">NFL Fourth Down Simulator</a>
+	    </div>
+	    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+	      <ul class="nav navbar-nav">
+	        <li cydr-extraclasses="{'active': State() == 'configure' || State() == 'results'}">
+	          <a href="#" cydr-click="State('configure')">Simulator</a>
+	        </li>
+	        <li cydr-extraclasses="{'active': State() == 'howitworks'}">
+	          <a href="#" cydr-click="State('howitworks')">How it works</a>
+	        </li>
+	      </ul>
+	    </nav>
+	  </div>
+	</header>
+	<div class="container wrap" cydr-visible="State() == 'configure'">
+		<div class="row" >
+			<div class="col-xs-12 col-md-6 col-md-offset-3">
+					<form role="form">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h2 class="panel-title">Configure your simulation</h2></div>
+								<div class="configure">
+									<div class="radio">
+										<label><input type="radio" cydr-checked="Strategy" name="Strategy" value="goforit" /> Always go for it on 4th down</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" cydr-checked="Strategy" name="Strategy" value="punt" /> Always punt on 4th down</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" cydr-checked="Strategy" name="Strategy" value="custompunt" /> Punt, when...</label>
+									</div>
+
+									<div class="radio">
+										<label><input type="radio" cydr-checked="Strategy" name="Strategy" value="customgoforit" /> Go for it, when...</label>
+									</div>
+
+									<div cydr-visible="Strategy() == 'custompunt'">
+										<div cydr-loop="PuntingCriteria">
+											<div class="criteria">
+												<div class="criterion">
+													There are
+													<select cydr-value="ToGoMin">
+														<option value="0">-- Any --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+													</select>
+													to
+
+													<select cydr-value="ToGoMax">
+														<option value="100">-- Any --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="100">10+</option>
+													</select>
+													yards to go.
+												</div>
+
+												<div class="criterion">
+													And the ball is between the
+													<select cydr-value="PositionMin">
+														<option value="0">-- Any --</option><option value="5">&lt; 5</option><option value="10">&lt; 10</option><option value="15">&lt; 15</option><option value="20">&lt; 20</option><option value="25">&lt; 25</option><option value="30">&lt; 30</option><option value="35">&lt; 35</option><option value="40">&lt; 40</option><option value="45">&lt; 45</option><option value="50">-- 50 --</option><option value="55">&gt; 45</option><option value="60">&gt; 40</option><option value="65">&gt; 35</option>
+													</select>
+													and
+
+													<select cydr-value="PositionMax">
+														<option value="100">-- Any --</option><option value="5">&lt; 5</option><option value="10">&lt; 10</option><option value="15">&lt; 15</option><option value="20">&lt; 20</option><option value="25">&lt; 25</option><option value="30">&lt; 30</option><option value="35">&lt; 35</option><option value="40">&lt; 40</option><option value="45">&lt; 45</option><option value="50">-- 50 --</option><option value="55">&gt; 45</option><option value="60">&gt; 40</option><option value="65">&gt; 35</option>
+													</select>
+													yard line.
+												</div>
+
+												<a href="#" cydr-click="delete"><i class="glyphicon glyphicon-remove"></i></a>
+											</div>
+										</div>
+										<button class="btn btn-success" cydr-click="AddPuntingCriterion"><i class="glyphicon glyphicon-plus"></i> Add Criterion</button>
+									</div>
+									<div cydr-visible="Strategy() == 'customgoforit'">
+										<div cydr-loop="GoForItCriteria">
+											<div class="criteria">
+												<div class="criterion">
+													There are
+													<select cydr-value="ToGoMin">
+														<option value="0">-- Any --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+													</select>
+													to
+													<select cydr-value="ToGoMax">
+														<option value="100">-- Any --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="100">10+</option>
+													</select>
+													yards to go.
+
+												</div>
+
+												<div class="criterion">
+													And the ball is between the
+													<select cydr-value="PositionMin">
+														<option value="0">-- Any --</option><option value="5">&lt; 5</option><option value="10">&lt; 10</option><option value="15">&lt; 15</option><option value="20">&lt; 20</option><option value="25">&lt; 25</option><option value="30">&lt; 30</option><option value="35">&lt; 35</option><option value="40">&lt; 40</option><option value="45">&lt; 45</option><option value="50">-- 50 --</option><option value="55">&gt; 45</option><option value="60">&gt; 40</option><option value="65">&gt; 35</option>
+													</select>
+													and
+													<select cydr-value="PositionMax">
+														<option value="100">-- Any --</option><option value="5">&lt; 5</option><option value="10">&lt; 10</option><option value="15">&lt; 15</option><option value="20">&lt; 20</option><option value="25">&lt; 25</option><option value="30">&lt; 30</option><option value="35">&lt; 35</option><option value="40">&lt; 40</option><option value="45">&lt; 45</option><option value="50">-- 50 --</option><option value="55">&gt; 45</option><option value="60">&gt; 40</option><option value="65">&gt; 35</option>
+													</select>
+													yard line.
+												</div>
+												<a href="#" cydr-click="delete"><i class="glyphicon glyphicon-remove"></i></a>
+											</div>
+										</div>
+										<button class="btn btn-success"  cydr-click="AddGoForItCriterion"><i class="glyphicon glyphicon-plus"></i> Add Criterion</button>
+									</div>
+								</div>
+						</div>
+						<div class="form-group">
+							<label>Number of simulations</label><br/>
+							<input class="simulation-count" type="text" cydr-value="Simulations" />
+						</div>
+						<div class="form-group">
+							<button cydr-click="RunSimulation" cydr-content="Loading().getValue() ? 'Simluation in progress...' : 'Run simulation'" class="btn btn-danger run-simulation">Run simulation</button>
+							<h2>Your score: <span cydr-content="YourScore"></span></h2>
+							<button cydr-click="ResetSimulation" class="btn btn-default reset-simulation">Reset</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container wrap" cydr-visible="State() == 'results'">
+		<div class="row">
+			<div class="col-xs-1 col-md-8">
+				<h3>Your score: <span cydr-content="YourScore"></span></h3>
+
+			</div>
+			<div class="col-xs-12 col-md-4">
+				<button class="run-again btn btn-danger" cydr-click="RunSimulation"><i class="glyphicon glyphicon-repeat"></i> <span cydr-content="Loading().getValue() ? 'Running...' : 'Run Again'"></span></button>
+				<button class="run-again btn btn-default" cydr-click="ResetSimulation"><i class="glyphicon glyphicon-chevron-left"></i> Change settings</button>
+
+			</div>
+		</div>
+		<div class="row" style="height:600px;overflow:auto;">
+			<div class="col-xs-12 col-md-12">
+				<table class="table table-bordered" cydr-extraclasses="{'loading' : Loading().getValue()}">
+					<thead>
+						<tr>
+							<th>Down</th>
+							<th>Field position</th>
+							<th>Chance of conversion</th>
+							<th>Conversion result</th>
+							<th>Cost/Benefit of attempt</th>
+							<th>Punt result</th>
+							<th>Cost of punting</th>
+							<th>Your Decision</th>
+							<th>Net</th>
+						</tr>
+					</thead>
+					<tbody cydr-loop="Results">
+						<tr>
+							<td>4th and <span cydr-content="Togo"></span></th>
+							<td><span class="label label-success" cydr-content="FourthDownYardLineNice"></span></td>
+							<td cydr-content="ChanceOfConversion"></td>
+							<td>
+								Gain of <span cydr-content="FourthDownGain"></span> yards, to the <span class="label label-success" cydr-content="NewYardLineNice"></span>
+								<span cydr-visible="Converted().getValue()">
+									<span class="label label-primary">Converted</span>.<br>
+									<small>Your scoring chances:<br>TD: <span cydr-content="ChanceOfTDAfter4th"></span>% / FG: <span cydr-content="ChanceOfFGAfter4th"></span>%</small>
+								</span>
+								<span cydr-visible="!Converted().getValue()">
+									<span class="label label-danger">Failed</span>.<br>
+									<small>Opponent scoring chances:<br>TD: <span cydr-content="ChanceOfTDAfter4th"></span>% / FG: <span cydr-content="ChanceOfFGAfter4th"></span>%</small>
+								</span>
+							</td>
+							<td cydr-content="CostBenefitOfAttempt"></td>
+							<td>
+								<span cydr-content="PuntingDistanceNice"></span>, to the <span class="label label-success" cydr-content="PuntingYardLineNice"></span><br>
+								<small>Opponent scoring chances:<br>TD: <span cydr-content="ChanceOfTDAfterPunt"></span>% / FG: <span cydr-content="ChanceOfFGAfterPunt"></span>%</small>
+							</td>
+							<td cydr-content="CostOfPunting"></td>
+							<td cydr-content="DecisionLabel"></td>
+							<td cydr-content="Net"></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+	</div>
+	<div class="container wrap" cydr-visible="State() == 'howitworks'">
+		<div class="row">
+			<div class="col-xs-12 col-md-6 col-md-offset-3">
+				<h2>The Premise</h1>
+				<p>This simulator allows you to analyse the outcomes of random fourth down scenarios. In each one, you have the choice of punting or going for a first down conversion, based on rules that you can define. For each scenario, the simulator will generate a random result for both punting and a conversion attempt, driven by probabilities harvested from the last 10 years of NFL data. After each possible outcome is generated, your actual decision is applied. This allows the simulator to calculate the cost/benefit in <strong>expected points</strong> of not only what you <em>chose to do</em>, but also the <strong>opportunity cost</strong> of what you <em>didn't do</em>. The difference between those values becomes your <strong>net score</strong> for each scenario.</p>
+
+				<h2>Examples</h2>
+				<div class="well">
+					<ul class="list-group">
+						<li class="list-group-item">It's 4th and 19 on your own <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 25</span> yard line.
+						<li class="list-group-item">A hypothetical attempt to convert (21% chance) <strong>fails</strong>, resulting in a gain of <strong>13 yards</strong>, giving the opponent the ball at your <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 38</span> yard line. The expected points from this field position are <strong>2.78</strong></li>
+						<li class="list-group-item">A hypothetical punt goes <strong>33 yards</strong> to the opponent's <span class="label label-success">42 <i class="glyphicon glyphicon-chevron-right"></i></span> yard line. The expected points from this field position are <strong>1.57</strong></li>
+						<li class="list-group-item">Your choice: <strong>Punt</strong>.</li>
+						<li class="list-group-item">Since the conversion attempt <em>would have</em> cost you 2.78 points, and the punt cost you 1.57 points, this results in a net benefit of <strong>1.21</strong> points, and this value is added to your score.</li>
+					</ul>
+				</div>
+
+				<div class="well">
+				<ul class="list-group">
+					<li class="list-group-item">It's 4th and 4 on your own <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 28</span> yard line.
+					<li class="list-group-item">A hypothetical attempt to convert (47% chance) <strong>fails</strong>, resulting in a gain of <strong>0 yards</strong>, giving the opponent the ball at your <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 28</span> yard line. The expected points from this field position are <strong>3.47</strong></li>
+					<li class="list-group-item">A hypothetical punt goes <strong>47 yards</strong> to the opponent's <span class="label label-success">25 <i class="glyphicon glyphicon-chevron-right"></i></span> yard line. The expected points from this field position are <strong>0.58</strong></li>
+					<li class="list-group-item">Your choice: <strong>Go for it</strong>.</li>
+					<li class="list-group-item">Since the conversion attempt cost you 3.47 points, and the punt <em>would have</em> cost you 0.58 points, this results in a net loss of <strong>2.89</strong> points, and this value is deducted from your score.</li>
+				</ul>
+				</div>
+
+				<div class="well">
+				<ul class="list-group">
+					<li class="list-group-item">It's 4th and 1 on your own <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 46</span> yard line.
+					<li class="list-group-item">A hypothetical attempt to convert (72% chance) <strong>succeeds</strong>, resulting in a gain of <strong>2 yards</strong>, to the <span class="label label-success"><i class="glyphicon glyphicon-chevron-left"></i> 48</span> yard line. The expected points from this field position are <strong>1.92</strong></li>
+					<li class="list-group-item">A hypothetical punt goes <strong>36 yards</strong> to the opponent's <span class="label label-success">18 <i class="glyphicon glyphicon-chevron-right"></i></span> yard line. The expected points from this field position are <strong>0.26</strong></li>
+					<li class="list-group-item">Your choice: <strong>Go for it</strong>.</li>
+					<li class="list-group-item">Since the conversion attempt benefitted you 1.92 points, and the punt <em>would have</em> cost you 0.26 points, this results in a net benefit of <strong>2.18</strong> points, and this value is added to your score.</li>
+				</ul>
+				</div>
+
+				<h2>FAQ</h2>
+				<h3>How accurate is the data?</h3>
+				<p>To remove statistical noise, data on scoring is harvested from <strong>first and third quarters only</strong>. This is to isolate high-pressure, clock-driven drives where offenses and defenses are not necessarily making decisions based on risk assessment. All other data are from actual plays, for all teams, in the regular season, for the exact scenarios described, between the years 2003 and 2013.</p>
+
+				<h3>What about turnovers?</h3>
+				<p>Turnovers are accounted for in the expected points. That's why some field positions actually have <strong>negative</strong> expected points.</p>
+
+				<h3>What about punts returned for touchdowns?</h3>
+				<p>This is can happen, based on real probabilities. When a punt is returned for a touchdown, the cost of the punt is <strong>7 points</strong>.</p>
+
+				<h3>What about field goals?</h3>
+				<p>For the purposes of this simulation, no fourth down plays are run inside the <span class="label label-success">35 ></span> yard line, where it is safe to assume a team might try a field goal rather than punt or attempt to convert.</p>
+
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

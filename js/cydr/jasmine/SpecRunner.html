@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Spec Runner</title>
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png">
+
+  <link rel="stylesheet" type="text/css" href="vendor/jasmine/jasmine.css">
+
+  <script type="text/javascript" src="vendor/jasmine/jasmine.js"></script>
+  <script type="text/javascript" src="vendor/jasmine/jasmine-html.js"></script>
+
+  <script type="text/javascript" src="vendor/jquery/jquery.js"></script>
+
+  <script type="text/javascript" src="lib/jasmine-jquery.js"></script>
+
+  <script type="text/javascript" src="require.js"></script>
+  <script>
+  require.config({
+    baseUrl: "../src/",
+    urlArgs: "v=" +  (new Date()).getTime()
+  });
+  </script>
+  <script type="text/javascript" src="spec.js"></script>
+
+
+</head>
+
+<body>
+<div id="spec">
+  <span cydr-content="FirstName"></span>
+  <input type="text" cydr-value="FirstName" />
+  <input type="text" cydr-value="LastName" />
+  <input type="checkbox" cydr-checked="IsMember" /> Member?
+  <div id="extraclass" cydr-extraclasses="{ismember: IsMember}"></div>
+  <a id="attribute" cydr-attr="{href: FirstName}"></a>
+  <a cydr-click="set('FirstName','Susan')"></a>
+  <div cydr-visible="IsMember"></div>
+  <div cydr-hidden="IsMember"></div>
+  <p>Hello, <span cydr-visible="IsMember">Member </span><span id="fullname" cydr-content="FullName"></span></p>
+  <h2>You have <span id="todocount" cydr-content="Todos().count()"></span> todos</h2>
+
+  <h4>Add a todo</h4>
+  <form id="todo-add" cydr-submit="createTodo">
+    <input name="Title" type="text" placeholder="Title of todo..." /><br />
+    Category:
+    <select cydr-options="Categories" cydr-optionvalue="Title" cydr-optiontext="Title" name="Category" cydr-value="CategoryFilter"></select><br />
+    <input type="checkbox" name="IsDone" /> This todo is done<br />
+    <button type="submit">Add this todo</button>
+  </form>
+  <div style="float:left;width:300px">
+    All Todos:
+    <ul id="todoloop" cydr-loop="Todos">
+        <li cydr-extraclasses="{done: IsDone}">
+          <input type="checkbox" cydr-checked="IsDone" /> <span cydr-content="Title"></span> [<span cydr-content="Category"></span>]
+          <select cydr-value="Category" cydr-options="Up().Categories()" cydr-optiontext="Title" cydr-optionvalue="Title"  ></select>
+        </li>
+
+    </ul>
+  </div>
+  <div style="float:left;width:300px">
+  Filter by category:
+    <select id="optionsbinding" cydr-optionscaption="-- Please select --" cydr-options="Categories" cydr-optiontext="Title" cydr-optionvalue="Title" cydr-value="CategoryFilter"></select>
+    (<span cydr-content="CategoryFilter"></span>)
+    <ul id="fiteredtodoloop" cydr-loop="FilteredTodos">
+      <li><i cydr-content="Title"></i> <i cydr-content="Category"></i></li>
+    </ul>
+
+  </div>
+
+<div style="float:left;width:300px">
+  <h3>Competed Todos</h3>
+  <ul cydr-loop="CompetedTodos">
+    <li><span cydr-content="Title"></span></li>
+  </ul>
+</div>
+  <div style="clear:both;">&nbsp;</div>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<div id="spec">
+	<span cydr-content="FirstName"></span>
+	<input type="text" cydr-value="FirstName" />
+	<input type="checkbox" cydr-checked="IsMember" />
+	<div id="extraclass" cydr-extraclasses="{ismember: IsMember}"></div>
+	<a id="attribute" cydr-attr="{href: FirstName}"></a>
+	<a cydr-click="set('FirstName','Susan')"></a>
+	<div cydr-visible="IsMember"></div>
+	<div cydr-hidden="IsMember"></div>
+
+	<ul id="todoloop" cydr-loop="Todos">
+		<li cydr-content="Title"></li>
+	</ul>
+
+
+
+</div>
