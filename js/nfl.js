@@ -3,7 +3,7 @@ require.config({
     urlArgs: "bust=" +  (new Date()).getTime()
 });
 
-define(['cydr/dist/cydr-dist', 'data/probabilities'], function(Cydr, Probabilities) {
+define(['cydr/src/main', 'data/probabilities'], function(Cydr, Probabilities) {
     var i, weight, Simulator, SimulationResult, App;
 
     Simulator = Cydr.ViewModel.extend({
@@ -315,8 +315,13 @@ define(['cydr/dist/cydr-dist', 'data/probabilities'], function(Cydr, Probabiliti
 
 
     var App = new Simulator("#app");
+    App.onReady(function() {
+        document.getElementById('loading').style.display = 'none';
+    });
     App.get("PuntingCriteria").push(new SimulationCriterion());
     App.get("GoForItCriteria").push(new SimulationCriterion());
+
+    App.run();
 
 
 
