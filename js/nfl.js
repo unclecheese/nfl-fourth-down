@@ -61,7 +61,6 @@ define(['cydr/dist/cydr-dist', 'data/probabilities'], function(Cydr, Probabiliti
 
         simulate: function () {
             var result, net = 0, results = [], i;
-            console.log("start");
             for(i = 0; i < this.get("Simulations"); i++) {
                 net = 0;
                 result = new SimulationResult({
